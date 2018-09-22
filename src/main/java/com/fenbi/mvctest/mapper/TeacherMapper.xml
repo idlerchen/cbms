@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.mvctest.mapper.TeacherMapper">
+
+	<!-- 定义结果集的基本映射标签 -->
+	<resultMap type="com.fenbi.mvctest.entity.Teacher" id="BaseResultMap">
+		<id column="id" property="id"/>	
+		<result column="name" property="name"/>
+		<result column="gender" property="gender"/>
+		<result column="email" property="email"/>
+		<result column="username" property="username"/>
+		<result column="status" property="status"/>
+		<result column="photo_url" property="photoUrl"/>
+		<result column="description" property="description"/>
+		<result column="score" property="score"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!-- sql:根据关键字(name)查询所有老师数量 -->
+	<select id="selectCount" resultType="int" parameterType="String">
+		select count(*) from fb_teacher
+		<if test="_parameter!=null">
+		where name like '%${_parameter}%'
+		</if>
+	</select>
+
+	<!-- sql:插入老师记录 -->
+	<insert id="insert" parameterType="com.fenbi.mvctest.entity.Teacher">
+		insert into fb_teacher (
+		name,gender,email,username,status,photo_url,description,score,create_time
+		) values
+		(
+		#{name}, #{gender}, #{email},
+		#{username}, #{status}, #{photoUrl},
+		#{description},#{score}, #{createTime}
+		)
+	</insert>
+	
+	<!-- sql:根据id修改老师的在职状态 -->
+	<update id="updateStatus" parameterType="com.fenbi.mvctest.entity.Teacher">
+		update fb_teacher
+		set status=#{status}
+		where id=#{id}
+	</update>
+	
+	<!-- sql:根据id修改老师信息 -->
+	<update id="update" parameterType="com.fenbi.mvctest.entity.Teacher">
+		update fb_teacher 
+		<set>
+			<if test="name != null">
+			name=#{name},
+			</if>
+			<if test="gender != null">
+			gender=#{gender},
+			</if>
+			<if test="email != null">
+			email=#{email},
+			</if>
+			<if test="username != null">
+			username=#{username},
+			</if>
+			<if test="status != null">
+			status=#{status},
+			</if>
+			<if test="photoUrl != null">
+			photo_url=#{photoUrl},
+			</if>
+			<if test="description != null">
+			description=#{description},
+			</if>
+			<if test="score != null">
+			score=#{score},
+			</if>
+			<if test="createTime != null">
+			create_time=#{createTime},
+			</if>
+		</set>
+		where
+		id = #{id}
+	</update>
+
+	<!-- sql:根据id删除老师 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from fb_teacher where
+		id=#{id}
+	</delete>
+
+	<!-- sql:根据name模糊查询所有老师信息  带分页limit限制-->
+	<select id="selectAll" resultMap="BaseResultMap" 
+		parameterType="com.fenbi.mvctest.entity.Page">
+		select * from fb_teacher
+		<if test="name !=null">
+			where name like '%${name}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+
+	<!-- sql:根据id查找老师信息-->
+	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from fb_teacher
+		where id = #{id}
+	</select>
+	
+	<!-- sql:获取所有的讲师名字，在添加课时中需要 -->
+	<select id="selectNames" resultMap="BaseResultMap">
+		select id,name from fb_teacher
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+

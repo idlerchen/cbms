@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.mvctest.mapper.RoleFunctionMapper">
+	
+	<resultMap type="com.fenbi.mvctest.entity.RoleFunction" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="function_id" property="functionId"/>
+		<result column="role_id" property="roleId"/>
+	</resultMap>
+	
+	<!--sql:插入Role  -->
+    <insert id="insert">
+        insert into fb_role_function (function_id,role_id) values(#{functionId},#{roleId})
+    </insert>
+    
+    
+	<!-- sql:根据adminid删除Role -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from fb_role_function where
+		role_id=#{roleId}
+	</delete>
+
+	<!-- sql:根据roleId查找Role的function信息-->
+	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from fb_role_function
+		where role_id = #{roleId}
+	</select>
+	
+	<!--sql:查询所有Role  -->
+	 <select id="select" resultMap="BaseResultMap">
+    	select * from fb_role_function
+    </select>
+	
+</mapper>

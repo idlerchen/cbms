@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.mvctest.mapper.RoleMapper">
+	
+	<resultMap type="com.fenbi.mvctest.entity.Role" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!--sql:插入Role  -->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.fenbi.mvctest.entity.Role">
+        insert into fb_role (name,create_time) values(#{name},#{createTime})
+    </insert>
+    
+	<!--sql:查询所有Role  -->
+	 <select id="select" resultMap="BaseResultMap">
+    	select * from fb_role
+    </select>
+    
+    <!-- sql:根据关键字(name)查询所有Role数量 -->
+	<select id="selectCount" resultType="int" parameterType="String">
+		select count(*) from fb_role
+		<if test="_parameter!=null">
+		where name like '%${_parameter}%'
+		</if>
+	</select>
+
+	<!-- sql:根据id修改Role信息 -->
+	<update id="update" parameterType="com.fenbi.mvctest.entity.Role">
+		update fb_role 
+		<set>
+			<if test="name != null">
+			name=#{name},
+			</if>
+			<if test="createTime != null">
+			create_time=#{createTime},
+			</if>
+		</set>
+		where
+		id = #{id}
+	</update>
+
+	<!-- sql:根据id删除Role -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from fb_role where
+		id=#{id}
+	</delete>
+
+	<!-- sql:根据name模糊查询所有Role信息  带分页limit限制-->
+	<select id="selectAll" resultMap="BaseResultMap" 
+		parameterType="com.fenbi.mvctest.entity.Page">
+		select * from fb_role
+		<if test="name !=null">
+			where name like '%${name}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+
+	<!-- sql:根据id查找Role信息-->
+	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from fb_role
+		where id = #{id}
+	</select>
+	
+</mapper>

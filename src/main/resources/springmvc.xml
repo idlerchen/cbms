@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       		http://www.springframework.org/schema/beans/spring-beans.xsd 
+       		http://www.springframework.org/schema/context 
+       		http://www.springframework.org/schema/context/spring-context.xsd
+       		http://www.springframework.org/schema/mvc
+       		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<!-- 配置注解扫描的package  -->
+	<context:component-scan base-package="com.fenbi.mvctest.controller" />
+	<!-- 注册andlerMapper、HandlerAdapter两个映射类，启用注解的方式指定url与Controller的映射 -->
+	<mvc:annotation-driven />
+
+	<!-- 默认的消息转换器，Controller的方法如果返回特殊对象， 将会执行该消息转换器，通过jackson相关jar包转成json字符串输出给客户端-->
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<bean id="mappingJacksonHttpMessageConverter"
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="supportedMediaTypes" value="application/json;charset=UTF-8" />
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+
+	<!-- 视图解析器 转发路径的前缀与后缀 -->
+	 <bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	</bean> 
+	<!--上传文件的解析  -->
+	<bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    </bean>
+    
+     <!--配置拦截器-->
+    <mvc:interceptors>
+        <!--拦截器1 登录验证拦截器-->
+        <mvc:interceptor>
+            <!--配置拦截器的作用路径-->
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/admin/login.do"/>
+            <mvc:exclude-mapping path="/admin/logout.do"/>
+            <!--定义在<mvc:interceptor>下面的表示匹配指定路径的请求才进行拦截-->
+            <bean class="com.fenbi.mvctest.interceptor.LoginInterceptor"/>
+        </mvc:interceptor>
+        <!--拦截器2 权限管理拦截器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+             <mvc:exclude-mapping path="/admin/login.do"/>
+            <mvc:exclude-mapping path="/admin/logout.do"/>
+            <bean class="com.fenbi.mvctest.interceptor.FunctionInterceptor"/>
+   		 </mvc:interceptor>
+    </mvc:interceptors>
+    
+</beans>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.mvctest.mapper.AdminMapper">
+	
+	<resultMap type="com.fenbi.mvctest.entity.Admin" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="password" property="password"/>
+		<result column="name" property="name"/>
+		<result column="email" property="email"/>
+		<result column="status" property="status"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!--sql:插入admin  -->
+    <insert id="insert" parameterType="com.fenbi.mvctest.entity.Admin">
+        insert into fb_admin (username,password,name,email,status,create_time) 
+        values(#{username},#{password},#{name},#{email},#{status},#{createTime})
+    </insert>
+    
+	<!--sql:查询所有admin  -->
+	 <select id="select" resultMap="BaseResultMap">
+    	select * from fb_admin
+    </select>
+    
+    <!--sql:登录-username+password查找  -->
+    <select id="login" resultMap="BaseResultMap">
+    	select * from fb_admin where username=#{username} and password=#{password}
+    </select>
+    
+    <!-- sql:根据关键字(name)查询所有admin数量 -->
+	<select id="selectCount" resultType="int" parameterType="String">
+		select count(*) from fb_admin
+		<if test="_parameter!=null">
+		where name like '%${_parameter}%'
+		</if>
+	</select>
+
+	<!-- sql:根据id修改admin信息 -->
+	<update id="update" parameterType="com.fenbi.mvctest.entity.Admin">
+		update fb_admin 
+		<set>
+			<if test="username != null">
+			username=#{username},
+			</if>
+			<if test="password != null">
+			password=#{password},
+			</if>
+			<if test="name != null">
+			name=#{name},
+			</if>
+			<if test="email != null">
+			email=#{email},
+			</if>
+			<if test="status != null">
+			status=#{status},
+			</if>
+			<if test="createTime != null">
+			create_time=#{createTime},
+			</if>
+		</set>
+		where
+		id = #{id}
+	</update>
+
+	<!-- sql:根据id删除admin -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from fb_admin where
+		id=#{id}
+	</delete>
+
+	<!-- sql:根据name模糊查询所有admin信息  带分页limit限制-->
+	<select id="selectAll" resultMap="BaseResultMap" 
+		parameterType="com.fenbi.mvctest.entity.Page">
+		select * from fb_admin
+		<if test="name !=null">
+			where name like '%${name}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+
+	<!-- sql:根据id查找admin信息-->
+	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from fb_admin
+		where id = #{id}
+	</select>
+	
+</mapper>

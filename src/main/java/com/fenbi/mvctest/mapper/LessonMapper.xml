@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.mvctest.mapper.LessonMapper">
+
+	<!-- 定义结果集的基本映射标签 -->
+	<resultMap type="com.fenbi.mvctest.entity.Lesson" id="BaseResultMap">
+		<id column="id" property="id"/>	
+		<result column="course_id" property="courseId"/>
+		<result column="teacher_id" property="teacherId"/>
+		<result column="title" property="title"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="create_time" property="createTime"/>
+		<!-- course表的字段 -->
+		<result column="fc_title" property="courseTitle"/>
+		<!-- teacher表的字段 -->
+		<result column="ft_name" property="teacherName"/>
+	</resultMap>
+	
+	<!-- sql:根据关键字(name)查询所有课时数量 -->
+	<select id="selectCount" resultType="int" parameterType="String">
+		select count(*) from fb_lesson
+		<if test="_parameter!=null">
+		where title like '%${_parameter}%'
+		</if>
+	</select>
+
+	<!-- sql:插入课时记录 -->
+	<insert id="insert" parameterType="com.fenbi.mvctest.entity.Lesson">
+		insert into fb_lesson (
+		course_id,teacher_id,title,start_time,end_time,create_time
+		) values
+		(
+		#{courseId}, #{teacherId}, #{title},
+		#{startTime}, #{endTime},#{createTime}
+		)
+	</insert>
+	
+	
+	<!-- sql:根据id修改课时信息 -->
+	<update id="update" parameterType="com.fenbi.mvctest.entity.Lesson">
+		update fb_lesson 
+		<set>
+			<if test="courseId != null">
+			course_id=#{courseId},
+			</if>
+			<if test="teacherId != null">
+			teacher_id=#{teacherId},
+			</if>
+			<if test="title != null">
+			title=#{title},
+			</if>
+			<if test="startTime != null">
+			start_time=#{startTime},
+			</if>
+			<if test="endTime != null">
+			end_time=#{endTime},
+			</if>
+		</set>
+		where
+		id = #{id}
+	</update>
+
+	<!-- sql:根据id删除课时 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from fb_lesson where
+		id=#{id}
+	</delete>
+
+	<!-- sql:根据name模糊查询所有课时信息  带分页limit限制-->
+	<select id="selectAll" resultMap="BaseResultMap" 
+		parameterType="com.fenbi.mvctest.entity.Page">
+		SELECT fl.id id,
+		fl.course_id course_id,
+		fl.teacher_id teacher_id,
+		fl.title title,
+		fl.start_time start_time,
+		fl.end_time end_time,
+		fl.create_time create_time,
+		fc.title fc_title,
+		ft.name ft_name 
+		FROM fb_lesson fl 
+		JOIN fb_course fc ON fl.course_id=fc.id
+		JOIN fb_teacher ft ON fl.teacher_id=ft.id
+		<if test="title !=null">
+			where fl.title like '%${title}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+
+	<!-- sql:根据id查找课时信息-->
+	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from fb_lesson
+		where id = #{id}
+	</select>
+	
+	<!-- sql:根据courseid查找课时信息-->
+	<select id="selectByCourseId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT fl.id id,
+		fl.course_id course_id,
+		fl.teacher_id teacher_id,
+		fl.title title,
+		fl.start_time start_time,
+		fl.end_time end_time,
+		fl.create_time create_time,
+		fc.title fc_title,
+		ft.name ft_name 
+		FROM fb_lesson fl 
+		JOIN fb_course fc ON fl.course_id=fc.id
+		JOIN fb_teacher ft ON fl.teacher_id=ft.id
+		where fl.course_id = #{courseId}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+

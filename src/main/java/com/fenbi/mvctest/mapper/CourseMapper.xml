@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.mvctest.mapper.CourseMapper">
+
+	<!-- 定义结果集的基本映射标签 -->
+	<resultMap type="com.fenbi.mvctest.entity.Course" id="BaseResultMap">
+		<id column="id" property="id"/>	
+		<result column="type_id" property="typeId"/>
+		<result column="title" property="title"/>
+		<result column="description" property="description"/>
+		<result column="price" property="price"/>
+		<result column="total" property="total"/>
+		<result column="status" property="status"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="create_time" property="createTime"/>
+		<result column="sale_num" property="saleNum"/>
+		<result column="lesson_count" property="lessonCount"/>
+		<!-- course_type表的字段 -->
+		<result column="fct_name" property="courseTypeName"/>
+	</resultMap>
+	
+	<select id="selectCount" resultType="int" parameterType="String">
+		select count(*) from fb_course
+		<if test="_parameter!=null">
+		where title like '%${_parameter}%'
+		</if>
+	</select>
+
+	<!-- 如果要做插入操作，则使用insert标签定义sql语句即可 #{typeId} 的意义： mybatis将会自动在该位置为？赋值，赋值为course.typeId 
+		的属性值 所以要求执行insert时必须传入一个course对象 -->
+	<insert id="insert" parameterType="com.fenbi.mvctest.entity.Course">
+		insert into fb_course (
+		`type_id`, `title`, `description`,
+		`price`,
+		`total`, `start_time`,
+		`end_time`, `sale_num`, `lesson_count`,
+		`create_time`, `status`
+		) values
+		(
+		#{typeId}, #{title}, #{description},
+		#{price}, #{total}, #{startTime},
+		#{endTime},#{saleNum}, #{lessonCount},
+		#{createTime}, #{status}
+		)
+	</insert>
+	
+	<update id="updateStatus" parameterType="com.fenbi.mvctest.entity.Course">
+		update fb_course
+		set status=#{status}
+		where id=#{id}
+	</update>
+	<!-- 修改业务， 通过id修改匹配相应id那一条数据的其他字段信息 -->
+	<update id="update" parameterType="com.fenbi.mvctest.entity.Course">
+		update fb_course 
+		<set>
+			<if test="typeId != null">
+			type_id=#{typeId},
+			</if>
+			<if test="title != null">
+			title=#{title},
+			</if>
+			<if test="description != null">
+			description=#{description},
+			</if>
+			<if test="price != null">
+			price=#{price},
+			</if>
+			<if test="total != null">
+			total=#{total},
+			</if>
+			<if test="status != null">
+			status=#{status},
+			</if>
+			<if test="startTime != null">
+			start_time=#{startTime},
+			</if>
+			<if test="endTime != null">
+			end_time=#{endTime},
+			</if>
+			<if test="createTime != null">
+			create_time=#{createTime},
+			</if>
+			<if test="saleNum != null">
+			sale_num=#{saleNum},
+			</if>
+			<if test="lessonCount != null">
+			lesson_count=#{lessonCount},
+			</if>
+		</set>
+		where
+		id = #{id}
+	</update>
+
+	<!-- 通过id删除相应课程 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from fb_course where
+		id=#{id}
+	</delete>
+
+	<!-- 查询所有课程 -->
+	<select id="selectAll" resultType="com.fenbi.mvctest.entity.Course" 
+		parameterType="com.fenbi.mvctest.entity.Page">
+		select
+			id,
+			type_id as typeId,
+			title,
+			description,
+			price,
+			total,
+			status,
+			start_time as startTime,
+			end_time as endTime,
+			create_time as createTime,
+			sale_num as saleNum,
+			lesson_count as lessonCount
+		from fb_course
+		<if test="title !=null">
+			where title like '%${title}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+
+	<!-- 通过Id查询  匹配相应Id的课程对象 -->
+	<select id="selectById" resultType="com.fenbi.mvctest.entity.Course" parameterType="java.lang.Integer">
+		select
+			id,
+			type_id as typeId,
+			title,
+			description,
+			price,
+			total,
+			status,
+			start_time as startTime,
+			end_time as endTime,
+			create_time as createTime,
+			sale_num as saleNum,
+			lesson_count as lessonCount
+		from fb_course
+		where id = #{id}
+	</select>
+	
+	<!-- sql:获取所有的课程名字，在添加课时中需要 -->
+	<select id="selectTitles" resultType="com.fenbi.mvctest.entity.Course">
+		select id,title from fb_course
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+

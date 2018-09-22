@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.mvctest.mapper.FunctionMapper">
+	
+	<resultMap type="com.fenbi.mvctest.entity.Function" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="keyword" property="keyword"/>
+		<result column="url" property="url"/>
+	</resultMap>
+	
+    
+	<!--sql:查询所有Role  -->
+	 <select id="select" resultMap="BaseResultMap">
+    	select * from fb_function
+    </select>
+    
+    <!--sql:根据adminId查询function  -->
+    <select id="selectByadminId" resultMap="BaseResultMap" parameterType="int">
+    	select ff.* 
+    	from fb_admin fa
+    	join fb_admin_role far on fa.id=far.admin_id
+    	join fb_role_function frf on far.role_id=frf.role_id
+    	join fb_function ff on frf.function_id=ff.id
+    	where fa.id=#{id}
+    </select>
+</mapper>
